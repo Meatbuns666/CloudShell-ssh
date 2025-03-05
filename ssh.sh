@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# 更新系统并安装所需工具
+# 更新系统并安装必要的工具
 sudo apt update
-sudo apt install -y wget unzip curl jq sudo tar
+sudo apt install -y curl jq sudo tar unzip
 
 # 拉取 Debian 12 镜像
 sudo docker pull debian:12
@@ -11,7 +11,7 @@ sudo docker pull debian:12
 sudo docker run -d --name debian_container -p 2222:22 debian:12 tail -f /dev/null
 
 # 进入容器并安装 SSH 服务
-sudo docker exec -it debian_container bash -c "apt update && apt install -y openssh-server sudo wget curl tar jq unzip"
+sudo docker exec -it debian_container bash -c "apt update && apt install -y openssh-server sudo curl jq tar unzip"
 
 # 设置 SSH 密码为 Meatbuns
 sudo docker exec -it debian_container bash -c "echo 'root:Meatbuns' | chpasswd"
@@ -19,10 +19,12 @@ sudo docker exec -it debian_container bash -c "echo 'root:Meatbuns' | chpasswd"
 # 启动 SSH 服务
 sudo docker exec -it debian_container bash -c "service ssh start"
 
-# 下载并安装 ngrok
-sudo docker exec -it debian_container bash -c "wget https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz"
-sudo docker exec -it debian_container bash -c "tar -xvzf ngrok-v3-stable-linux-amd64.tgz"
-sudo docker exec -it debian_container bash -c "mv ngrok /usr/local/bin/"
+# 使用 curl 下载 ngrok
+sudo docker exec -it debian_container bash -c "curl -s https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz -o /tmp/ngrok-v3-stable-linux-amd64.tgz"
+
+# 解压 ngrok 文件并移动到正确的位置
+sudo docker exec -it debian_container bash -c "tar -xvzf /tmp/ngrok-v3-stable-linux-amd64.tgz -C /tmp"
+sudo docker exec -it debian_container bash -c "mv /tmp/ngrok /usr/local/bin/"
 
 # 提示用户输入 ngrok 授权令牌
 echo "请输入您的 ngrok 授权令牌："
