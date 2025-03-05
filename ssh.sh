@@ -11,7 +11,7 @@ sudo docker pull debian:12
 sudo docker run -d --name debian_container -p 2222:22 debian:12 tail -f /dev/null
 
 # 进入容器并安装 SSH 服务
-sudo docker exec -it debian_container bash -c "apt update && apt install -y openssh-server sudo"
+sudo docker exec -it debian_container bash -c "apt update && apt install -y openssh-server sudo wget curl tar jq unzip"
 
 # 设置 SSH 密码为 Meatbuns
 sudo docker exec -it debian_container bash -c "echo 'root:Meatbuns' | chpasswd"
