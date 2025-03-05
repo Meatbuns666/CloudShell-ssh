@@ -38,13 +38,9 @@ docker exec -it debian_container bash -c "ngrok config add-authtoken $NGROK_TOKE
 
 # 10. 启动 ngrok 隧道
 echo "启动 ngrok 隧道..."
-docker exec -it debian_container bash -c "nohup ngrok tcp 22 &"
+docker exec -it debian_container bash -c "nohup ngrok tcp 22 > ngrok.log 2>&1 &"
 
-# 11. 获取 ngrok 隧道地址
-TUNNEL_URL=$(docker exec -it debian_container bash -c "curl -s http://localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url'")
-
-# 12. 打印容器和 ngrok 地址
+# 11. 打印容器和 ngrok 地址
 echo "容器已启动，SSH 密码为 'Meatbuns'。"
-echo "ngrok 隧道地址为: $TUNNEL_URL"
 echo "您可以通过以下命令连接到容器："
-echo "ssh root@$TUNNEL_URL -p 22"
+echo "docker exec -it debian_container bash"
