@@ -37,8 +37,8 @@ sudo docker exec -it debian_container bash -c "nohup ngrok tcp 2222 &"
 sleep 5  # 等待 ngrok 启动
 TUNNEL_URL=$(sudo docker exec -it debian_container bash -c "curl -s http://127.0.0.1:4040/api/tunnels | jq -r '.tunnels[0].public_url'")
 
-# 提取动态端口号
-TUNNEL_PORT=$(echo $TUNNEL_URL | sed 's/.*://')
+# 提取动态端口号（去掉 'tcp://' 并获取端口）
+TUNNEL_PORT=$(echo $TUNNEL_URL | sed 's/tcp:\/\///' | cut -d ':' -f2)
 
 # 输出隧道信息
 echo "容器已启动，SSH 密码为 'Meatbuns'。ngrok 隧道地址为: $TUNNEL_URL"
