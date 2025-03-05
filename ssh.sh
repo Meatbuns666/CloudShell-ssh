@@ -1,33 +1,50 @@
 #!/bin/bash
 
-# 更新容器中的系统
-sudo docker exec -it debian_container bash -c "apt update -y && apt install -y curl jq sudo wget tar unzip"
+# 1. 下载 Docker 镜像，如果镜像不存在
+echo "检查并下载 Debian 镜像..."
+docker pull debian:12
 
-# 启动容器的 SSH 服务
-sudo docker exec -it debian_container bash -c "service ssh start"
+# 2. 创建并启动容器
+echo "启动并创建容器..."
+docker run -d --name debian_container debian:12 bash -c "while true; do sleep 3600; done"
 
-# 使用 curl 下载 ngrok（确保使用正确的下载链接）
-sudo docker exec -it debian_container bash -c "curl -s https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz -o /tmp/ngrok-v3-stable-linux-amd64.tgz"
+# 3. 安装必需的工具
+echo "安装必需的工具..."
+docker exec -it debian_container bash -c "apt update -y && apt install -y curl jq sudo wget tar unzip openssh-server"
 
-# 解压 ngrok 文件
-sudo docker exec -it debian_container bash -c "tar -xvzf /tmp/ngrok-v3-stable-linux-amd64.tgz -C /tmp"
+# 4. 启动 SSH 服务
+echo "启动 SSH 服务..."
+docker exec -it debian_container bash -c "service ssh start"
 
-# 将 ngrok 移动到 /usr/local/bin 目录
-sudo docker exec -it debian_container bash -c "mv /tmp/ngrok /usr/local/bin/"
+# 5. 使用 curl 下载 ngrok 安装包
+echo "下载 ngrok 安装包..."
+docker exec -it debian_container bash -c "curl -s https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz -o /tmp/ngrok-v3-stable-linux-amd64.tgz"
 
-# 提示用户输入 ngrok 授权令牌
+# 6. 解压 ngrok 文件
+echo "解压 ngrok 文件..."
+docker exec -it debian_container bash -c "tar -xvzf /tmp/ngrok-v3-stable-linux-amd64.tgz -C /tmp"
+
+# 7. 将 ngrok 移动到 /usr/local/bin 目录
+echo "将 ngrok 移动到 /usr/local/bin 目录..."
+docker exec -it debian_container bash -c "mv /tmp/ngrok /usr/local/bin/"
+
+# 8. 提示用户输入 ngrok 授权令牌
 echo "请输入您的 ngrok 授权令牌："
 read NGROK_TOKEN
 
-# 设置 ngrok 授权令牌
-sudo docker exec -it debian_container bash -c "ngrok config add-authtoken $NGROK_TOKEN"
+# 9. 配置 ngrok 授权令牌
+echo "配置 ngrok 授权令牌..."
+docker exec -it debian_container bash -c "ngrok config add-authtoken $NGROK_TOKEN"
 
-# 启动 ngrok 隧道
-sudo docker exec -it debian_container bash -c "nohup ngrok tcp 22 &"
+# 10. 启动 ngrok 隧道
+echo "启动 ngrok 隧道..."
+docker exec -it debian_container bash -c "nohup ngrok tcp 22 &"
 
-# 获取 ngrok 隧道地址
-TUNNEL_URL=$(sudo docker exec -it debian_container bash -c "curl -s http://localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url'")
+# 11. 获取 ngrok 隧道地址
+TUNNEL_URL=$(docker exec -it debian_container bash -c "curl -s http://localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url'")
 
-echo "容器已启动，SSH 密码为 'Meatbuns'。ngrok 隧道地址为: $TUNNEL_URL"
+# 12. 打印容器和 ngrok 地址
+echo "容器已启动，SSH 密码为 'Meatbuns'。"
+echo "ngrok 隧道地址为: $TUNNEL_URL"
 echo "您可以通过以下命令连接到容器："
 echo "ssh root@$TUNNEL_URL -p 22"
