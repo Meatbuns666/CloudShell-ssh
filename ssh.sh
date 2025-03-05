@@ -10,7 +10,7 @@ docker run -d --name debian_container debian:12 bash -c "while true; do sleep 36
 
 # 3. 安装必需的工具
 echo "安装必需的工具..."
-docker exec -it debian_container bash -c "apt update -y && apt install -y curl jq sudo wget tar unzip openssh-server"
+docker exec -it debian_container bash -c "apt update -y && apt install -y curl jq sudo wget tar unzip openssh-server screen"
 
 # 4. 启动 SSH 服务
 echo "启动 SSH 服务..."
