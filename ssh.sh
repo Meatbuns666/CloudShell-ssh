@@ -41,6 +41,6 @@ echo "启动 ngrok 隧道..."
 docker exec -it debian_container bash -c "screen ngrok tcp 22"
 
 # 11. 打印容器和 ngrok 地址
-echo "容器已启动，SSH 密码为 'Meatbuns'。"
+echo "容器已启动，SSH 密码请手动修改。"
 echo "您可以通过以下命令连接到容器："
 echo "docker exec -it debian_container bash"
