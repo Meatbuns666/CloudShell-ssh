@@ -2,7 +2,7 @@
 
 # 更新系统并安装所需工具
 sudo apt update
-sudo apt install -y wget unzip curl jq sudo
+sudo apt install -y wget unzip curl jq sudo tar
 
 # 拉取 Debian 12 镜像
 sudo docker pull debian:12
