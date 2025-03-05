@@ -38,7 +38,7 @@ docker exec -it debian_container bash -c "ngrok config add-authtoken $NGROK_TOKE
 
 # 10. 启动 ngrok 隧道
 echo "启动 ngrok 隧道..."
-docker exec -it debian_container bash -c "nohup ngrok tcp 22 > ngrok.log 2>&1 &"
+docker exec -it debian_container bash -c "nohup ngrok tcp 22 > /root/ngrok.log 2>&1 &"
 
 # 11. 打印容器和 ngrok 地址
 echo "容器已启动，SSH 密码为 'Meatbuns'。"
