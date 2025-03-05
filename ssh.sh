@@ -1,17 +1,13 @@
 #!/bin/bash
 
-# 更新系统并安装所需工具
-sudo apt update
-sudo apt install -y wget unzip curl jq
-
 # 拉取 Debian 12 镜像
 sudo docker pull debian:12
 
 # 创建并启动一个新的 Debian 容器（确保容器持续运行）
 sudo docker run -d --name debian_container -p 2222:22 debian:12 tail -f /dev/null
 
-# 进入容器并安装 SSH 服务和其他必需工具
-sudo docker exec -it debian_container bash -c "apt update && apt install -y openssh-server sudo wget unzip curl jq"
+# 进入容器并安装所需的工具和服务
+sudo docker exec -it debian_container bash -c "apt update && apt install -y wget unzip curl jq openssh-server sudo"
 
 # 设置 SSH 密码为 Meatbuns
 sudo docker exec -it debian_container bash -c "echo 'root:Meatbuns' | chpasswd"
