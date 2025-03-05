@@ -1,12 +1,6 @@
 #!/bin/bash
 
-# 更新系统并安装必要的软件包
-sudo apt update && sudo apt upgrade -y
-sudo apt install -y docker.io wget unzip
-
-# 启动并启用 Docker 服务
-sudo systemctl enable docker
-sudo systemctl start docker
+sudo apt install -y wget unzip
 
 # 拉取 Debian 12 镜像
 sudo docker pull debian:12
