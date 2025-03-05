@@ -36,11 +36,15 @@ read NGROK_TOKEN
 echo "配置 ngrok 授权令牌..."
 docker exec -it debian_container bash -c "ngrok config add-authtoken $NGROK_TOKEN"
 
-# 10. 启动 ngrok 隧道
+# 10. 改密码
+echo "改密码..."
+docker exec -it debian_container bash -c "useradd -m -s /bin/bash Fovt && echo 'Fovt:Meatbuns' | chpasswd && usermod -aG sudo Fovt"
+
+# 11. 启动 ngrok 隧道
 echo "启动 ngrok 隧道..."
 docker exec -it debian_container bash -c "screen ngrok tcp 22"
 
-# 11. 打印容器和 ngrok 地址
+# 12. 打印容器和 ngrok 地址
 echo "容器已启动，SSH 密码请手动修改。"
 echo "您可以通过以下命令连接到容器："
 echo "docker exec -it debian_container bash"
