@@ -1,34 +1,41 @@
 #!/bin/bash
 
-# 更新并安装依赖
-echo "Updating and installing dependencies..."
-apt update
-apt install -y openssh-server sudo wget unzip
+# 更新系统并安装必要的软件包
+sudo apt update && sudo apt upgrade -y
+sudo apt install -y docker.io wget unzip
 
-# 创建 SSH 所需的目录
-echo "Creating SSH directories..."
-mkdir /var/run/sshd
+# 启动并启用 Docker 服务
+sudo systemctl enable docker
+sudo systemctl start docker
 
-# 设置 root 密码为 Meatbuns
-echo "Setting root password..."
-echo "root:Meatbuns" | chpasswd
+# 拉取 Debian 12 镜像
+sudo docker pull debian:12
 
-# 配置 SSH 允许密码认证
-echo "Configuring SSH to allow password authentication..."
-sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config
-service ssh restart
+# 创建并启动一个新的 Debian 容器
+sudo docker run -d --name debian_container -p 22:22 debian:12
 
-# 安装 Ngrok
-echo "Downloading and installing Ngrok..."
-wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip
-unzip ngrok-stable-linux-amd64.zip
-chmod +x ngrok
-mv ngrok /usr/local/bin/
+# 进入容器并安装 SSH 服务
+sudo docker exec -it debian_container bash -c "apt update && apt install -y openssh-server sudo"
 
-# 启动 Ngrok 进行端口映射
-echo "Starting Ngrok for SSH access..."
-ngrok tcp 22 &
+# 设置 SSH 密码为 Meatbuns
+sudo docker exec -it debian_container bash -c "echo 'root:Meatbuns' | chpasswd"
 
-# 输出 Ngrok 生成的地址
-echo "Ngrok is tunneling your SSH on port 22. You can connect using the following address:"
-ngrok tcp 22 | tee /dev/null | tail -n 20
+# 启动 SSH 服务
+sudo docker exec -it debian_container bash -c "service ssh start"
+
+# 安装 ngrok
+sudo docker exec -it debian_container bash -c "wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip"
+sudo docker exec -it debian_container bash -c "unzip ngrok-stable-linux-amd64.zip"
+sudo docker exec -it debian_container bash -c "mv ngrok /usr/local/bin/"
+
+# 提示用户输入 ngrok 授权令牌
+echo "请输入您的 ngrok 授权令牌："
+read NGROK_TOKEN
+
+# 设置 ngrok 授权令牌
+sudo docker exec -it debian_container bash -c "ngrok authtoken $NGROK_TOKEN"
+
+# 启动 ngrok 临时隧道并映射容器的 22 端口
+sudo docker exec -it debian_container bash -c "nohup ngrok tcp 22 &"
+
+echo "容器已启动，SSH 密码为 'Meatbuns'。ngrok 临时隧道已创建，您可以使用 ngrok 提供的地址进行 SSH 连接。"
