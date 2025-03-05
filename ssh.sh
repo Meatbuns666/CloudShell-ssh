@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 安装 wget 和 unzip
-sudo apt install -y wget unzip
+sudo apt install -y unzip
 
 # 拉取 Debian 12 镜像
 sudo docker pull debian:12
